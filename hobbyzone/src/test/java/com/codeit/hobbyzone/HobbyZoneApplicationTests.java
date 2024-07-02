@@ -1,10 +1,10 @@
-package com.codeit.chwizone;
+package com.codeit.hobbyzone;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest
-class ChwizoneApplicationTests {
+class HobbyZoneApplicationTests {
 
 	@Test
 	void contextLoads() {

@@ -1,13 +1,13 @@
-package com.codeit.chwizone;
+package com.codeit.hobbyzone;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
-public class ChwizoneApplication {
+public class HobbyZoneApplication {
 
 	public static void main(String[] args) {
-		SpringApplication.run(ChwizoneApplication.class, args);
+		SpringApplication.run(HobbyZoneApplication.class, args);
 	}
 
 }
