@@ -11,19 +11,19 @@ import org.springframework.test.context.support.AbstractTestExecutionListener;
 public class DatabaseCleanListener extends AbstractTestExecutionListener {
 
     @Override
-    public void beforeTestMethod(final TestContext testContext) {
-        final EntityManager em = findEntityManager(testContext);
-        final List<String> tableNames = calculateTableNames(em);
+    public void beforeTestMethod(TestContext testContext) {
+        EntityManager em = findEntityManager(testContext);
+        List<String> tableNames = calculateTableNames(em);
 
         clean(em, tableNames);
     }
 
-    private EntityManager findEntityManager(final TestContext testContext) {
+    private EntityManager findEntityManager(TestContext testContext) {
         return testContext.getApplicationContext()
                           .getBean(EntityManager.class);
     }
 
-    private List<String> calculateTableNames(final EntityManager em) {
+    private List<String> calculateTableNames(EntityManager em) {
         return em.getMetamodel()
                  .getEntities()
                  .stream()
@@ -32,7 +32,7 @@ public class DatabaseCleanListener extends AbstractTestExecutionListener {
                  .toList();
     }
 
-    private String calculateTableName(final EntityType<?> entityType) {
+    private String calculateTableName(EntityType<?> entityType) {
         final Table tableAnnotation = entityType.getJavaType().getAnnotation(Table.class);
 
         if (tableAnnotation != null) {
@@ -49,7 +49,7 @@ public class DatabaseCleanListener extends AbstractTestExecutionListener {
     }
 
 
-    private void clean(final EntityManager em, final List<String> tableNames) {
+    private void clean(EntityManager em, List<String> tableNames) {
         em.flush();
 
         final StringBuilder sb = new StringBuilder("SET REFERENTIAL_INTEGRITY FALSE;");
@@ -61,7 +61,11 @@ public class DatabaseCleanListener extends AbstractTestExecutionListener {
 
             sb.append("ALTER TABLE ")
               .append(tableName)
-              .append(" ALTER COLUMN id RESTART WITH 1;");
+              .append(" ALTER COLUMN ")
+              .append(tableName)
+              .append("_")
+              .append("id")
+              .append(" RESTART WITH 1;");
         }
 
         sb.append("SET REFERENTIAL_INTEGRITY TRUE;");

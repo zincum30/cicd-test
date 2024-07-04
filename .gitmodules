@@ -1,0 +1,3 @@
+[submodule "hobbyzone/src/main/resources/be-sub-module"]
+	path = hobbyzone/src/main/resources/be-sub-module
+	url = https://github.com/codeit-team2/be-sub-module.git

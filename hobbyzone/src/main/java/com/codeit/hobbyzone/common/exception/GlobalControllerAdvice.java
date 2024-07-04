@@ -7,8 +7,8 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.FieldError;
-import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
+import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
@@ -18,6 +18,11 @@ public class GlobalControllerAdvice extends ResponseEntityExceptionHandler {
 
     private static final String LOG_FORMAT = "%s : ";
 
+    @ExceptionHandler(RuntimeException.class)
+    public ResponseEntity<Object> test() {
+        return ResponseEntity.internalServerError().build();
+    }
+
     @Override
     protected ResponseEntity<Object> handleMethodArgumentNotValid(
             MethodArgumentNotValidException ex,
@@ -25,12 +30,10 @@ public class GlobalControllerAdvice extends ResponseEntityExceptionHandler {
             HttpStatusCode status,
             WebRequest request
     ) {
-        logger.warn(String.format(LOG_FORMAT, ex.getClass().getSimpleName()), ex);
-
         String parameters = ex.getFieldErrors()
-                           .stream()
-                           .map(FieldError::getField)
-                           .collect(Collectors.joining(", "));
+                              .stream()
+                              .map(FieldError::getField)
+                              .collect(Collectors.joining(", "));
         ExceptionStatus exceptionStatus = ExceptionStatus.find(ex.getClass());
 
         return ResponseEntity.status(exceptionStatus.getHttpStatus())
@@ -44,21 +47,6 @@ public class GlobalControllerAdvice extends ResponseEntityExceptionHandler {
     }
 
     @Override
-    protected ResponseEntity<Object> handleHttpRequestMethodNotSupported(
-            HttpRequestMethodNotSupportedException ex,
-            HttpHeaders headers,
-            HttpStatusCode status,
-            WebRequest request
-    ) {
-        logger.warn(String.format(LOG_FORMAT, ex.getClass().getSimpleName()), ex);
-
-        ExceptionStatus exceptionStatus = ExceptionStatus.find(ex.getClass());
-
-        return ResponseEntity.status(exceptionStatus.getHttpStatus())
-                             .body(new BaseExceptionDto(exceptionStatus.getCode(), exceptionStatus.getMessage()));
-    }
-
-    @Override
     protected ResponseEntity<Object> handleExceptionInternal(
             Exception ex,
             Object body,
@@ -69,5 +57,33 @@ public class GlobalControllerAdvice extends ResponseEntityExceptionHandler {
         logger.error(String.format(LOG_FORMAT, ex.getClass().getSimpleName()), ex);
 
         return super.handleExceptionInternal(ex, body, headers, statusCode, request);
+    }
+
+    @ExceptionHandler(IllegalArgumentException.class)
+    private ResponseEntity<BaseExceptionDto> handleIllegalArgumentException(IllegalArgumentException ex) {
+        return processWarningExceptionHandle(ex);
+    }
+
+    @ExceptionHandler(IllegalStateException.class)
+    private ResponseEntity<BaseExceptionDto> handleIllegalStateException(IllegalStateException ex) {
+        return processErrorExceptionHandle(ex);
+    }
+
+    private ResponseEntity<BaseExceptionDto> processWarningExceptionHandle(Exception ex) {
+        logger.warn(String.format(LOG_FORMAT, ex.getClass().getSimpleName()), ex);
+
+        ExceptionStatus exceptionStatus = ExceptionStatus.find(ex.getClass());
+
+        return ResponseEntity.status(exceptionStatus.getHttpStatus())
+                             .body(new BaseExceptionDto(exceptionStatus.getCode(), exceptionStatus.getMessage()));
+    }
+
+    private ResponseEntity<BaseExceptionDto> processErrorExceptionHandle(Exception ex) {
+        logger.error(String.format(LOG_FORMAT, ex.getClass().getSimpleName()), ex);
+
+        ExceptionStatus exceptionStatus = ExceptionStatus.find(ex.getClass());
+
+        return ResponseEntity.status(exceptionStatus.getHttpStatus())
+                             .body(new BaseExceptionDto(exceptionStatus.getCode(), exceptionStatus.getMessage()));
     }
 }
