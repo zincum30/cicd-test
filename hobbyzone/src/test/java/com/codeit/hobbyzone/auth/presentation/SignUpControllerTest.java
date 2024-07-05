@@ -88,7 +88,6 @@ class SignUpControllerTest {
         SignUpDto signUpDto = new SignUpDto("invalid", "", "");
 
         // when & then
-        // when & then
         mockMvc.perform(
                 post("/auths/signup")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -106,7 +105,7 @@ class SignUpControllerTest {
     @Test
     void signUp_메서드_실패_테스트_유효하지_않은_비밀번호() throws Exception {
         // given
-        given(signUpService.signUp(any(SignUpInfoDto.class))).willThrow(InvalidPasswordException.class);
+        given(signUpService.signUp(any(SignUpInfoDto.class))).willThrow(new InvalidPasswordException());
 
         SignUpDto signUpDto = new SignUpDto("email@email.com", "1", "nickname");
 
@@ -117,7 +116,7 @@ class SignUpControllerTest {
                         .content(objectMapper.writeValueAsString(signUpDto))
         ).andExpectAll(
                 status().isBadRequest(),
-                jsonPath("$.code", is("VALIDATION_ERROR")),
+                jsonPath("$.code", is("VALIDATION_PASSWORD_ERROR")),
                 jsonPath("$.message", is("비밀번호는 영어와 숫자를 포함해 8글자 이상 입력해주세요."))
         );
     }
@@ -125,11 +124,10 @@ class SignUpControllerTest {
     @Test
     void signUp_메서드_실패_테스트_유효하지_않은_닉네임() throws Exception {
         // given
-        given(signUpService.signUp(any(SignUpInfoDto.class))).willThrow(InvalidNicknameException.class);
+        given(signUpService.signUp(any(SignUpInfoDto.class))).willThrow(new InvalidNicknameException());
 
         SignUpDto signUpDto = new SignUpDto("email@email.com", "invalid", "1");
 
-        // when & then
         // when & then
         mockMvc.perform(
                 post("/auths/signup")
@@ -137,7 +135,7 @@ class SignUpControllerTest {
                         .content(objectMapper.writeValueAsString(signUpDto))
         ).andExpectAll(
                 status().isBadRequest(),
-                jsonPath("$.code", is("VALIDATION_ERROR")),
+                jsonPath("$.code", is("VALIDATION_NICKNAME_ERROR")),
                 jsonPath("$.message", is("닉네임은 2글자 이상 8글자 이하로 입력해주세요."))
         );
     }
@@ -145,11 +143,10 @@ class SignUpControllerTest {
     @Test
     void signUp_메서드_실패_테스트_중복된_닉네임() throws Exception {
         // given
-        given(signUpService.signUp(any(SignUpInfoDto.class))).willThrow(DuplicateNicknameException.class);
+        given(signUpService.signUp(any(SignUpInfoDto.class))).willThrow(new DuplicateNicknameException());
 
         SignUpDto signUpDto = new SignUpDto("email@email.com", "password123", "nickname");
 
-        // when & then
         // when & then
         mockMvc.perform(
                 post("/auths/signup")
@@ -165,11 +162,10 @@ class SignUpControllerTest {
     @Test
     void signUp_메서드_실패_테스트_유효하지_않은_암호화_로직() throws Exception {
         // given
-        given(signUpService.signUp(any(SignUpInfoDto.class))).willThrow(InvalidPasswordEncoderException.class);
+        given(signUpService.signUp(any(SignUpInfoDto.class))).willThrow(new InvalidPasswordEncoderException());
 
         SignUpDto signUpDto = new SignUpDto("email@email.com", "password", "nickname");
 
-        // when & then
         // when & then
         mockMvc.perform(
                 post("/auths/signup")
@@ -218,7 +214,7 @@ class SignUpControllerTest {
     @Test
     void sendMail_메서드_실패_테스트_SMTP_실패() throws Exception {
         // given
-        willThrow(MailSendFailedException.class).given(signUpService).sendMail(anyString());
+        willThrow(new MailSendFailedException()).given(signUpService).sendMail(anyString());
 
         SendMailDto sendMailDto = new SendMailDto("email@email.com");
 
@@ -237,7 +233,7 @@ class SignUpControllerTest {
     @Test
     void sendMail_메서드_실패_테스트_이미_인증_메일을_요청했거나_회원_가입한_상태() throws Exception {
         // given
-        willThrow(AlreadyVerifyAccountException.class).given(signUpService).sendMail(anyString());
+        willThrow(new AlreadyVerifyAccountException()).given(signUpService).sendMail(anyString());
 
         SendMailDto sendMailDto = new SendMailDto("email@email.com");
 
@@ -248,8 +244,8 @@ class SignUpControllerTest {
                         .content(objectMapper.writeValueAsString(sendMailDto))
         ).andExpectAll(
                 status().isBadRequest(),
-                jsonPath("$.code", is("ALREADY_REQUEST")),
-                jsonPath("$.message", is("이미 인증 메일을 요청했거나 이미 회원 가입한 이메일입니다."))
+                jsonPath("$.code", is("ALREADY_SIGNED_UP")),
+                jsonPath("$.message", is("이미 회원 가입한 이메일입니다."))
         );
     }
 
@@ -271,7 +267,7 @@ class SignUpControllerTest {
     @Test
     void verify_실패_테스트_인증_메일_요청_전() throws Exception {
         // given
-        willThrow(VerifyAccountNotFoundException.class).given(signUpService).verify(anyString(), anyString());
+        willThrow(new VerifyAccountNotFoundException()).given(signUpService).verify(anyString(), anyString());
 
         VerifyDto verifyDto = new VerifyDto("email@email.com", "12345678");
 
@@ -290,7 +286,7 @@ class SignUpControllerTest {
     @Test
     void verify_실패_테스트_일치하지_않는_인증_코드() throws Exception {
         // given
-        willThrow(VerifyFailedException.class).given(signUpService).verify(anyString(), anyString());
+        willThrow(new VerifyFailedException()).given(signUpService).verify(anyString(), anyString());
 
         VerifyDto verifyDto = new VerifyDto("email@email.com", "wrong code");
 
@@ -301,7 +297,7 @@ class SignUpControllerTest {
                         .content(objectMapper.writeValueAsString(verifyDto))
         ).andExpectAll(
                 status().isBadRequest(),
-                jsonPath("$.code", is("VERIFICATION_FAIL")),
+                jsonPath("$.code", is("VERIFICATION_FAILED")),
                 jsonPath("$.message", is("인증 코드가 일치하지 않습니다."))
         );
     }
@@ -309,7 +305,7 @@ class SignUpControllerTest {
     @Test
     void verify_실패_테스트_인증_코드가_만료된_경우() throws Exception {
         // given
-        willThrow(ExpiredVerifyCodeException.class).given(signUpService).verify(anyString(), anyString());
+        willThrow(new ExpiredVerifyCodeException()).given(signUpService).verify(anyString(), anyString());
 
         VerifyDto verifyDto = new VerifyDto("email@email.com", "wrong code");
 
@@ -320,7 +316,7 @@ class SignUpControllerTest {
                         .content(objectMapper.writeValueAsString(verifyDto))
         ).andExpectAll(
                 status().isBadRequest(),
-                jsonPath("$.code", is("VERIFICATION_FAIL")),
+                jsonPath("$.code", is("EXPIRED_VERIFY_CODE")),
                 jsonPath("$.message", is("유효한 인증 코드가 아닙니다."))
         );
     }

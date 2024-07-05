@@ -1,12 +1,17 @@
 package com.codeit.hobbyzone.common.exception;
 
+import com.codeit.hobbyzone.common.exception.base.account.AccountClientException;
+import com.codeit.hobbyzone.common.exception.base.account.AccountServerException;
+import com.codeit.hobbyzone.common.exception.base.auth.SignUpClientException;
+import com.codeit.hobbyzone.common.exception.base.auth.SignUpServerException;
+import com.codeit.hobbyzone.common.exception.code.CommonErrorCode;
 import com.codeit.hobbyzone.common.exception.dto.BaseExceptionDto;
-import com.codeit.hobbyzone.common.exception.dto.ParameterExceptionDto;
-import java.util.stream.Collectors;
+import com.codeit.hobbyzone.common.exception.translate.AccountExceptionTranslator;
+import com.codeit.hobbyzone.common.exception.translate.CommonExceptionTranslator;
+import com.codeit.hobbyzone.common.exception.translate.SignUpExceptionTranslator;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
-import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -18,11 +23,6 @@ public class GlobalControllerAdvice extends ResponseEntityExceptionHandler {
 
     private static final String LOG_FORMAT = "%s : ";
 
-    @ExceptionHandler(RuntimeException.class)
-    public ResponseEntity<Object> test() {
-        return ResponseEntity.internalServerError().build();
-    }
-
     @Override
     protected ResponseEntity<Object> handleMethodArgumentNotValid(
             MethodArgumentNotValidException ex,
@@ -30,20 +30,12 @@ public class GlobalControllerAdvice extends ResponseEntityExceptionHandler {
             HttpStatusCode status,
             WebRequest request
     ) {
-        String parameters = ex.getFieldErrors()
-                              .stream()
-                              .map(FieldError::getField)
-                              .collect(Collectors.joining(", "));
-        ExceptionStatus exceptionStatus = ExceptionStatus.find(ex.getClass());
+        logger.warn(String.format(LOG_FORMAT, ex.getClass().getSimpleName()), ex);
 
-        return ResponseEntity.status(exceptionStatus.getHttpStatus())
-                             .body(
-                                     new ParameterExceptionDto(
-                                             exceptionStatus.getCode(),
-                                             parameters,
-                                             exceptionStatus.getMessage()
-                                     )
-                             );
+        CommonExceptionTranslator translator = CommonExceptionTranslator.find(CommonErrorCode.VALIDATION_ERROR);
+
+        return ResponseEntity.status(translator.status())
+                             .body(translator.translate(ex.getFieldErrors()));
     }
 
     @Override
@@ -59,31 +51,43 @@ public class GlobalControllerAdvice extends ResponseEntityExceptionHandler {
         return super.handleExceptionInternal(ex, body, headers, statusCode, request);
     }
 
-    @ExceptionHandler(IllegalArgumentException.class)
-    private ResponseEntity<BaseExceptionDto> handleIllegalArgumentException(IllegalArgumentException ex) {
-        return processWarningExceptionHandle(ex);
-    }
-
-    @ExceptionHandler(IllegalStateException.class)
-    private ResponseEntity<BaseExceptionDto> handleIllegalStateException(IllegalStateException ex) {
-        return processErrorExceptionHandle(ex);
-    }
-
-    private ResponseEntity<BaseExceptionDto> processWarningExceptionHandle(Exception ex) {
-        logger.warn(String.format(LOG_FORMAT, ex.getClass().getSimpleName()), ex);
-
-        ExceptionStatus exceptionStatus = ExceptionStatus.find(ex.getClass());
-
-        return ResponseEntity.status(exceptionStatus.getHttpStatus())
-                             .body(new BaseExceptionDto(exceptionStatus.getCode(), exceptionStatus.getMessage()));
-    }
-
-    private ResponseEntity<BaseExceptionDto> processErrorExceptionHandle(Exception ex) {
+    @ExceptionHandler(SignUpServerException.class)
+    private ResponseEntity<BaseExceptionDto> handleSignUpServerException(SignUpServerException ex) {
         logger.error(String.format(LOG_FORMAT, ex.getClass().getSimpleName()), ex);
 
-        ExceptionStatus exceptionStatus = ExceptionStatus.find(ex.getClass());
+        SignUpExceptionTranslator translator = SignUpExceptionTranslator.find(ex.getErrorCode());
 
-        return ResponseEntity.status(exceptionStatus.getHttpStatus())
-                             .body(new BaseExceptionDto(exceptionStatus.getCode(), exceptionStatus.getMessage()));
+        return ResponseEntity.status(translator.status())
+                             .body(translator.translate());
+    }
+
+    @ExceptionHandler(SignUpClientException.class)
+    private ResponseEntity<BaseExceptionDto> handleSignUpClientException(SignUpClientException ex) {
+        logger.warn(String.format(LOG_FORMAT, ex.getClass().getSimpleName()), ex);
+
+        SignUpExceptionTranslator translator = SignUpExceptionTranslator.find(ex.getErrorCode());
+
+        return ResponseEntity.status(translator.status())
+                             .body(translator.translate());
+    }
+
+    @ExceptionHandler(AccountServerException.class)
+    private ResponseEntity<BaseExceptionDto> handleAccountServerException(AccountServerException ex) {
+        logger.error(String.format(LOG_FORMAT, ex.getClass().getSimpleName()), ex);
+
+        AccountExceptionTranslator translator = AccountExceptionTranslator.find(ex.getErrorCode());
+
+        return ResponseEntity.status(translator.status())
+                             .body(translator.translate());
+    }
+
+    @ExceptionHandler(AccountClientException.class)
+    private ResponseEntity<BaseExceptionDto> handleAccountClientException(AccountClientException ex) {
+        logger.warn(String.format(LOG_FORMAT, ex.getClass().getSimpleName()), ex);
+
+        AccountExceptionTranslator translator = AccountExceptionTranslator.find(ex.getErrorCode());
+
+        return ResponseEntity.status(translator.status())
+                             .body(translator.translate());
     }
 }
