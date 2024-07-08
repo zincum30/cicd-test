@@ -1,4 +1,7 @@
 spring:
+  profiles:
+    default: test
+
   datasource:
     url: jdbc:h2:mem:testdb
     username: sa
@@ -28,3 +31,7 @@ token:
   refresh-expired-seconds: 259200
   access-expired-millis-seconds: 43200000
   refresh-expired-millis-seconds: 259200000
+
+image:
+  bucket: test-bucket
+  prefix: /

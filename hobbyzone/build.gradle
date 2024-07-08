@@ -45,6 +45,9 @@ dependencies {
 	// smtp
 	implementation 'org.springframework.boot:spring-boot-starter-mail'
 
+	// cloud
+	implementation 'com.google.cloud:google-cloud-storage:2.39.0'
+
 	// utils
 	compileOnly 'org.projectlombok:lombok'
 	annotationProcessor 'org.projectlombok:lombok'
@@ -98,7 +101,8 @@ jacocoTestReport {
 							'**/config/**',
 							'**/common/**',
 							'**/infrastructure/**',
-							'**/event/**'
+							'**/event/**',
+							'**/embed/**'
 					] + Qdomains)
 		}))
 	}
@@ -136,7 +140,8 @@ jacocoTestCoverageVerification {
 					'*.config.*',
 					'*.common.*',
 					'*.infrastructure.*',
-					'*.event.*'
+					'*.event.*',
+					'*.embed.*'
 			] + Qdomains
 		}
 	}
