@@ -61,4 +61,28 @@ class AccountTest {
         // then
         assertThat(actual).isEqualTo(email);
     }
+
+    @Test
+    void withdrawal_성공_테스트() {
+        // given
+        String email = "email@email.com";
+        String password = "password123";
+        String nickname = "nickname";
+
+        Account account = new Account(email, password, nickname);
+
+        // when
+        account.withdrawal();
+
+        // then
+        assertAll(
+                () -> assertThat(account.isWithdrawal()).isTrue(),
+                () -> assertThat(account.getEmail()).isNull(),
+                () -> assertThat(account.getPassword()).isNull()
+        );
+
+        boolean actual = account.isWithdrawal();
+
+        assertThat(actual).isTrue();
+    }
 }

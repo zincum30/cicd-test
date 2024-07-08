@@ -20,6 +20,9 @@ import com.codeit.hobbyzone.auth.application.dto.request.SignUpInfoDto;
 import com.codeit.hobbyzone.auth.application.exception.AlreadyVerifyAccountException;
 import com.codeit.hobbyzone.auth.application.exception.DuplicateNicknameException;
 import com.codeit.hobbyzone.auth.application.exception.VerifyAccountNotFoundException;
+import com.codeit.hobbyzone.auth.config.interceptor.AuthInterceptor;
+import com.codeit.hobbyzone.auth.config.properties.JwtConfigurationProperties;
+import com.codeit.hobbyzone.auth.config.resolver.AuthAccountInfoArgumentResolver;
 import com.codeit.hobbyzone.auth.domain.exception.ExpiredVerifyCodeException;
 import com.codeit.hobbyzone.auth.domain.exception.VerifyFailedException;
 import com.codeit.hobbyzone.auth.infrastructure.exception.MailSendFailedException;
@@ -28,6 +31,7 @@ import com.codeit.hobbyzone.auth.presentation.dto.request.SendMailDto;
 import com.codeit.hobbyzone.auth.presentation.dto.request.SignUpDto;
 import com.codeit.hobbyzone.auth.presentation.dto.request.VerifyDto;
 import com.codeit.hobbyzone.common.exception.GlobalControllerAdvice;
+import com.codeit.hobbyzone.config.AppConfig;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayNameGeneration;
@@ -36,12 +40,25 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.context.annotation.ComponentScan;
+import org.springframework.context.annotation.FilterType;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
-@WebMvcTest(controllers = {SignUpController.class})
+@WebMvcTest(
+        controllers = SignUpController.class,
+        excludeFilters = {
+                @ComponentScan.Filter(type = FilterType.ASSIGNABLE_TYPE,
+                        classes = {
+                                WebMvcConfigurer.class, AuthInterceptor.class, AuthAccountInfoArgumentResolver.class,
+                                JwtConfigurationProperties.class, AppConfig.class
+                        }
+                )
+        }
+)
 @DisplayNameGeneration(DisplayNameGenerator.ReplaceUnderscores.class)
 @SuppressWarnings("NonAsciiCharacters")
 class SignUpControllerTest {

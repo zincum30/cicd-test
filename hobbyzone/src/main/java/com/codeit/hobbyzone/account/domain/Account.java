@@ -26,10 +26,18 @@ public class Account extends BaseTimeEntity {
 
     private String nickname;
 
+    private boolean isWithdrawal = false;
+
     Account(String email, String password, String nickname) {
         this.email = email;
         this.password = password;
         this.nickname = nickname;
+    }
+
+    public void withdrawal() {
+        this.isWithdrawal = true;
+        this.email = null;
+        this.password = null;
     }
 
     public String email() {

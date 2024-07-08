@@ -2,11 +2,14 @@ package com.codeit.hobbyzone.common.exception;
 
 import com.codeit.hobbyzone.common.exception.base.account.AccountClientException;
 import com.codeit.hobbyzone.common.exception.base.account.AccountServerException;
+import com.codeit.hobbyzone.common.exception.base.auth.AuthClientException;
+import com.codeit.hobbyzone.common.exception.base.auth.AuthServerException;
 import com.codeit.hobbyzone.common.exception.base.auth.SignUpClientException;
 import com.codeit.hobbyzone.common.exception.base.auth.SignUpServerException;
 import com.codeit.hobbyzone.common.exception.code.CommonErrorCode;
 import com.codeit.hobbyzone.common.exception.dto.BaseExceptionDto;
 import com.codeit.hobbyzone.common.exception.translate.AccountExceptionTranslator;
+import com.codeit.hobbyzone.common.exception.translate.AuthExceptionTranslator;
 import com.codeit.hobbyzone.common.exception.translate.CommonExceptionTranslator;
 import com.codeit.hobbyzone.common.exception.translate.SignUpExceptionTranslator;
 import org.springframework.http.HttpHeaders;
@@ -86,6 +89,26 @@ public class GlobalControllerAdvice extends ResponseEntityExceptionHandler {
         logger.warn(String.format(LOG_FORMAT, ex.getClass().getSimpleName()), ex);
 
         AccountExceptionTranslator translator = AccountExceptionTranslator.find(ex.getErrorCode());
+
+        return ResponseEntity.status(translator.status())
+                             .body(translator.translate());
+    }
+
+    @ExceptionHandler(AuthServerException.class)
+    private ResponseEntity<BaseExceptionDto> handleAuthServerException(AuthServerException ex) {
+        logger.error(String.format(LOG_FORMAT, ex.getClass().getSimpleName()), ex);
+
+        AuthExceptionTranslator translator = AuthExceptionTranslator.find(ex.getErrorCode());
+
+        return ResponseEntity.status(translator.status())
+                             .body(translator.translate());
+    }
+
+    @ExceptionHandler(AuthClientException.class)
+    private ResponseEntity<BaseExceptionDto> handleAuthClientException(AuthClientException ex) {
+        logger.warn(String.format(LOG_FORMAT, ex.getClass().getSimpleName()), ex);
+
+        AuthExceptionTranslator translator = AuthExceptionTranslator.find(ex.getErrorCode());
 
         return ResponseEntity.status(translator.status())
                              .body(translator.translate());

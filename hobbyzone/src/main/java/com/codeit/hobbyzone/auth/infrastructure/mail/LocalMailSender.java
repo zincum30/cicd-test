@@ -1,4 +1,4 @@
-package com.codeit.hobbyzone.auth.infrastructure;
+package com.codeit.hobbyzone.auth.infrastructure.mail;
 
 import com.codeit.hobbyzone.auth.application.MailSender;
 import org.springframework.context.annotation.Profile;

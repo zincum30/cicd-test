@@ -20,3 +20,11 @@ spring:
     port: 587
     username: test
     password: test
+
+token:
+  access-key: thisistoolargeaccesstokenkeyfordummykeydatafortest
+  refresh-key: thisistoolargerefreshtokenkeyfordummykeydatafortest
+  access-expired-seconds: 43200
+  refresh-expired-seconds: 259200
+  access-expired-millis-seconds: 43200000
+  refresh-expired-millis-seconds: 259200000

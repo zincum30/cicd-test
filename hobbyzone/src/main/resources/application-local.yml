@@ -3,3 +3,11 @@ spring:
     driver-class-name: org.h2.Driver
     url: jdbc:h2:mem:test
     username: sa
+
+token:
+  access-key: thisistoolargeaccesstokenkeyfordummykeydataforlocal
+  refresh-key: thisistoolargerefreshtokenkeyfordummykeydataforlocal
+  access-expired-seconds: 43200
+  refresh-expired-seconds: 259200
+  access-expired-millis-seconds: 43200000
+  refresh-expired-millis-seconds: 259200000
