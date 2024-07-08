@@ -7,7 +7,7 @@ import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 
 import com.codeit.hobbyzone.account.domain.Account;
 import com.codeit.hobbyzone.account.domain.AccountBuilder;
-import com.codeit.hobbyzone.account.presentation.AccountRepository;
+import com.codeit.hobbyzone.account.infrastucture.AccountRepository;
 import com.codeit.hobbyzone.auth.application.dto.response.TokenDto;
 import com.codeit.hobbyzone.auth.application.exception.UnregisteredAccountException;
 import com.codeit.hobbyzone.auth.domain.token.TokenScheme;

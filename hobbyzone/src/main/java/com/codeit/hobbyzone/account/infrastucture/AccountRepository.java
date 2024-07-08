@@ -1,4 +1,4 @@
-package com.codeit.hobbyzone.account.presentation;
+package com.codeit.hobbyzone.account.infrastucture;
 
 import com.codeit.hobbyzone.account.domain.Account;
 import java.util.Optional;

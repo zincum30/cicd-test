@@ -1,8 +1,11 @@
 package com.codeit.hobbyzone.account.domain;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
+import com.codeit.hobbyzone.account.domain.exception.InvalidNicknameException;
+import com.codeit.hobbyzone.image.domain.ProfileImage;
 import org.junit.jupiter.api.DisplayNameGeneration;
 import org.junit.jupiter.api.DisplayNameGenerator;
 import org.junit.jupiter.api.Test;
@@ -84,5 +87,53 @@ class AccountTest {
         boolean actual = account.isWithdrawal();
 
         assertThat(actual).isTrue();
+    }
+
+    @Test
+    void changeNickname_성공_메서드() {
+        // given
+        String email = "email@email.com";
+        String password = "password123";
+        String nickname = "nickname";
+
+        Account account = new Account(email, password, nickname);
+
+        String changeNickname = "change";
+
+        // when
+        account.changeNickname(changeNickname);
+
+        // then
+        assertThat(account.getNickname()).isEqualTo(changeNickname);
+    }
+
+    @Test
+    void changeInfo_실패_테스트_유효하지_않은_닉네임() {
+        // given
+        String email = "email@email.com";
+        String password = "password123";
+        String nickname = "nickname";
+
+        Account account = new Account(email, password, nickname);
+
+        // when & then
+        assertThatThrownBy(() -> account.changeNickname(""))
+                .isInstanceOf(InvalidNicknameException.class);
+    }
+
+    @Test
+    void changeProfileImage_성공_테스트() {
+        // given
+        String email = "email@email.com";
+        String password = "password123";
+        String nickname = "nickname";
+
+        Account account = new Account(email, password, nickname);
+
+        // when
+        account.changeProfileImage(new ProfileImage("uploadName", "storeName"));
+
+        // then
+        assertThat(account.getProfileImage()).isNotNull();
     }
 }

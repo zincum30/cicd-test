@@ -5,7 +5,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.mockito.BDDMockito.given;
 
-import com.codeit.hobbyzone.account.presentation.AccountRepository;
+import com.codeit.hobbyzone.account.infrastucture.AccountRepository;
 import com.codeit.hobbyzone.auth.application.dto.request.SignUpInfoDto;
 import com.codeit.hobbyzone.auth.application.event.SentMailEvent;
 import com.codeit.hobbyzone.auth.application.exception.NotVerifyAccountException;

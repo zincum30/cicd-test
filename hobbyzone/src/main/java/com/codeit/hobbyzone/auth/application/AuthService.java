@@ -1,7 +1,7 @@
 package com.codeit.hobbyzone.auth.application;
 
 import com.codeit.hobbyzone.account.domain.Account;
-import com.codeit.hobbyzone.account.presentation.AccountRepository;
+import com.codeit.hobbyzone.account.infrastucture.AccountRepository;
 import com.codeit.hobbyzone.auth.application.dto.response.TokenDto;
 import com.codeit.hobbyzone.auth.application.exception.PasswordMismatchException;
 import com.codeit.hobbyzone.auth.application.exception.UnregisteredAccountException;

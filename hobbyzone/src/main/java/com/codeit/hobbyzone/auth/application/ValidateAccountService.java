@@ -1,6 +1,6 @@
 package com.codeit.hobbyzone.auth.application;
 
-import com.codeit.hobbyzone.account.presentation.AccountRepository;
+import com.codeit.hobbyzone.account.infrastucture.AccountRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
