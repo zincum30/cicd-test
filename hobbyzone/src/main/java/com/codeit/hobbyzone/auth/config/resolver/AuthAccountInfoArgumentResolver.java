@@ -20,7 +20,7 @@ public class AuthAccountInfoArgumentResolver implements HandlerMethodArgumentRes
     @Override
     public boolean supportsParameter(MethodParameter parameter) {
         return parameter.getParameterType()
-                        .equals(AuthAccount.class);
+                        .equals(AuthAccountInfo.class);
     }
 
     @Override
