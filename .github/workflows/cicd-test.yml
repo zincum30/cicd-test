@@ -44,14 +44,15 @@ jobs:
           ./gradlew clean build --exclude-task test
 
       - name: Copy jar file to remote VM
-        uses: appleboy/scp-action@v1.6.14
+        uses: appleboy/scp-action@v0.1.7
         with:
           host: 35.216.7.103
           key: ${{ secrets.HOBBYZONE_BE_SERVER_SSH_KEY }}
           username: rsa-key-20240701
+          password: 1234
           port: 22
           source: "build/libs/*.jar"
-          target: "/home/rsa-key-20240701/app"
+          target: "/home/rsa-key-20240701/"
           strip_components: 2
 
       - name: Deploy new version in VM
