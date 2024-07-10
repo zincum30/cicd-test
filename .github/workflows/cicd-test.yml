@@ -41,12 +41,19 @@ jobs:
           cd hobbyzone
           ./gradlew test jacocoTestReport
 
+      - name: Upload test report
+        if: always()
+        uses: actions/upload-artifact@v3
+        with:
+          name: test-report
+          path: hobbyzone/build/reports/tests/test/
+
 
       - name: Jacoco Report to PR
         id: jacoco
         uses: madrapps/jacoco-report@v1.6.1
         with:
-          paths: "hobbyzone/build/reports/jacoco/test/jacocoTestReport.xml"
+          paths: "hobbyzone/build/reports/tests/test/jacocoTestReport.xml"
           token: ${{ secrets.GITHUB_TOKEN }}
           min-coverage-overall: 50
           min-coverage-changed-files: 50
