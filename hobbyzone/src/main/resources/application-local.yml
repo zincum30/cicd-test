@@ -1,34 +1,72 @@
-spring:
-  datasource:
-    driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://34.64.157.95:3306/hobbyzone
-    username: root
-    password:
+name: Hobbyzone CICD with Gradle
 
-  jpa:
-    hibernate:
-      ddl-auto: update
-    properties:
-      hibernate:
-        dialect: org.hibernate.dialect.MySQLDialect
+on:
+  pull_request:
+    branches: [ "develop" ]
 
-  mail:
-    host: smtp.gmail.com
-    port: 587
-    username: hobbyzone.public
-    password: qmzmbeyilbtrruzo
-    properties:
-      mail:
-        smtp:
-          auth: true
-          timeout: 5000
-          starttls:
-            enable: true
+jobs:
+  cicd:
+    runs-on: ubuntu-latest
 
-token:
-  access-key: thisistoolargeaccesstokenkeyfordummykeydataforlocal
-  refresh-key: thisistoolargerefreshtokenkeyfordummykeydataforlocal
-  access-expired-seconds: 43200
-  refresh-expired-seconds: 259200
-  access-expired-millis-seconds: 43200000
-  refresh-expired-millis-seconds: 259200000
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v3
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+
+      - name: Grant execute permission for gradlew
+        run: chmod +x ./hobbyzone/gradlew
+
+      - name: Cache Gradle
+        uses: actions/cache@v3
+        with:
+          path: ~/.gradle/caches
+          key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
+          restore-keys: |
+            ${{ runner.os }}-gradle-
+
+      - name: Build with Gradle
+        run: |
+          cd hobbyzone
+          ./gradlew clean build   
+
+
+      - name: Run tests and generate Jacoco report
+        run: |
+          cd hobbyzone
+          ./gradlew test jacocoTestReport
+
+
+      - name: Jacoco Report to PR
+        id: jacoco
+        uses: madrapps/jacoco-report@v1.6.1
+        with:
+          paths: "hobbyzone/build/reports/jacoco/test/jacocoTestReport.xml"
+          token: ${{ secrets.GITHUB_TOKEN }}
+          min-coverage-overall: 50
+          min-coverage-changed-files: 50
+
+
+      - name: Copy jar file to remote VM
+        uses: appleboy/scp-action@master
+        with:
+          host: 35.216.7.103
+          key: ${{ secrets.HOBBYZONE_BE_SERVER_SSH_KEY }}
+          username: rsa-key-20240701
+          password:
+          port: 22
+          source: "hobbyzone/build/libs/*.jar"
+          target: "/home/rsa-key-20240701"
+          strip_components: 3
+
+      - name: Deploy new version in VM
+        uses: appleboy/ssh-action@master
+        with:
+          host: 35.216.7.103
+          key: ${{ secrets.HOBBYZONE_BE_SERVER_SSH_KEY }}
+          username: rsa-key-20240701
+          script: sudo bash /home/rsa-key-20240701/deploy-new-version.sh
