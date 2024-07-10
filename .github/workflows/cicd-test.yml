@@ -29,7 +29,7 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-gradle-
 
-      - name: Build with Gradle
+      - name: Build with Gradle and run tests
         run: |
           cd hobbyzone
           ./gradlew clean build   
@@ -41,7 +41,15 @@ jobs:
           cd hobbyzone
           ./gradlew test jacocoTestReport
           
-  
+
+      - name: Run JaCoCo and check coverage
+        id: jacoco
+        run: |
+          cd hobbyzone
+          ./gradlew test jacocoTestReport
+          coverage=$(sed -n 's/.*Overall coverage: \([0-9]*\.[0-9]*%\).*/\1/p' build/reports/jacoco/test/jacocoTestReport.xml | tr -d '%')
+          echo "::set-output name=coverage::$coverage"
+
       - name: Upload test report
         if: always()
         uses: actions/upload-artifact@v3
@@ -49,16 +57,18 @@ jobs:
           name: test-report
           path: hobbyzone/build/reports/tests/test/
 
-
-      - name: Jacoco Report to PR
-        id: jacoco
-        uses: madrapps/jacoco-report@v1.6.1
+      - name: Upload JaCoCo report
+        if: always()
+        uses: actions/upload-artifact@v3
         with:
-          paths: "hobbyzone/build/reports/tests/test/jacocoTestReport.xml"
-          token: ${{ secrets.GITHUB_TOKEN }}
-          min-coverage-overall: 50
-          min-coverage-changed-files: 50
+          name: jacoco-report
+          path: hobbyzone/build/reports/jacoco/test/
 
+      - name: Check coverage and fail if below threshold
+        if: ${{ steps.jacoco.outputs.coverage < '50.0' }}
+        run: |
+          echo "JaCoCo overall coverage is below threshold. Current coverage: ${{ steps.jacoco.outputs.coverage }}"
+          exit 1
 
       - name: Copy jar file to remote VM
         if: success()
