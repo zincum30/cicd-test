@@ -48,7 +48,7 @@ jobs:
         with:
           host: 35.216.7.103
           key: ${{ secrets.HOBBYZONE_BE_SERVER_SSH_KEY }}
-          username: rsa-key-20240701
+          username: rsa-key-20240611
           password:
           port: 22
           source: "hobbyzone/build/libs/*.jar"
