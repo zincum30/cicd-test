@@ -61,4 +61,4 @@ jobs:
           host: 35.216.7.103
           key: ${{ secrets.HOBBYZONE_BE_SERVER_SSH_KEY }}
           username: rsa-key-20240701
-          script: sudo bash /home/rsa-key-20240611/deploy-new-version.sh
+          script: sudo bash /home/rsa-key-20240701/deploy-new-version.sh
