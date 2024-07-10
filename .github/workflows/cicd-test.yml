@@ -44,7 +44,7 @@ jobs:
           ./gradlew clean build --exclude-task test
 
       - name: Copy jar file to remote VM
-        uses: appleboy/scp-action@master
+        uses: appleboy/scp-action@v1.6.14
         with:
           host: 35.216.7.103
           key: ${{ secrets.HOBBYZONE_BE_SERVER_SSH_KEY }}
