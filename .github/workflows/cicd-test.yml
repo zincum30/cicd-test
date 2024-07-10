@@ -48,11 +48,11 @@ jobs:
         with:
           host: 35.216.7.103
           key: ${{ secrets.HOBBYZONE_BE_SERVER_SSH_KEY }}
-          username: rsa-key-20240611
+          username: rsa-key-20240701
           password:
           port: 22
           source: "hobbyzone/build/libs/*.jar"
-          target: "/home/rsa-key-20240611"
+          target: "/home/rsa-key-20240701"
           strip_components: 3
 
       - name: Deploy new version in VM
@@ -60,5 +60,5 @@ jobs:
         with:
           host: 35.216.7.103
           key: ${{ secrets.HOBBYZONE_BE_SERVER_SSH_KEY }}
-          username: rsa-key-20240611
-          script: sudo bash /home/rsa-key-20240701/deploy-new-version.sh
+          username: rsa-key-20240701
+          script: sudo bash /home/rsa-key-20240611/deploy-new-version.sh
