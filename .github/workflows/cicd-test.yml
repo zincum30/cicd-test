@@ -52,7 +52,7 @@ jobs:
           password:
           port: 22
           source: "hobbyzone/build/libs/*.jar"
-          target: "/home/rsa-key-20240701"
+          target: "/home/rsa-key-20240611"
           strip_components: 3
 
       - name: Deploy new version in VM
