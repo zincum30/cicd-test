@@ -19,7 +19,7 @@ jobs:
           distribution: 'temurin'
 
       - name: Grant execute permission for gradlew
-        run: chmod +x ./chwizone/gradlew
+        run: chmod +x ./hobbyzone/gradlew
 
       - name: Cache Gradle
         uses: actions/cache@v3
@@ -39,7 +39,7 @@ jobs:
           min-coverage-changed-files: 50
 
       - name: Build with Gradle
-        run: ./chwizone/gradlew clean build --exclude-task test
+        run: ./hobbyzone/gradlew clean build --exclude-task test
 
       - name: Copy jar file to remote VM
         uses: appleboy/scp-action@master
