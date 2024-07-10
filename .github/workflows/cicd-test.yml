@@ -39,7 +39,9 @@ jobs:
           min-coverage-changed-files: 50
 
       - name: Build with Gradle
-        run: ./hobbyzone/gradlew clean build --exclude-task test
+        run: | 
+          cd hobbyzone
+          ./gradlew clean build --exclude-task test
 
       - name: Copy jar file to remote VM
         uses: appleboy/scp-action@master
