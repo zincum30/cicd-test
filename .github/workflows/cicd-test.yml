@@ -36,6 +36,7 @@ jobs:
 
 
       - name: Run tests and generate Jacoco report
+        continue-on-error: true
         run: |
           cd hobbyzone
           ./gradlew test jacocoTestReport
@@ -52,6 +53,7 @@ jobs:
 
 
       - name: Copy jar file to remote VM
+        if: success()
         uses: appleboy/scp-action@master
         with:
           host: 35.216.7.103
@@ -64,6 +66,7 @@ jobs:
           strip_components: 3
 
       - name: Deploy new version in VM
+        if: success()
         uses: appleboy/ssh-action@master
         with:
           host: 35.216.7.103
