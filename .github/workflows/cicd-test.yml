@@ -50,7 +50,9 @@ jobs:
 #          exit 1
 
       - name: Build with Gradle
-        run: ./gradlew clean build --exclude-task test
+        run: |
+          cd hobbyzone
+          ./gradlew clean build --exclude-task test
 
 
       - name: Copy jar file to remote VM
