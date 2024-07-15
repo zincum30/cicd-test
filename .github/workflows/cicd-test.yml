@@ -49,8 +49,12 @@ jobs:
 #          echo "JaCoCo overall coverage is below threshold. Current coverage: ${{ steps.jacoco.outputs.coverage }}"
 #          exit 1
 
+      - name: Build with Gradle
+        run: ./gradlew clean build --exclude-task test
+
+
       - name: Copy jar file to remote VM
-        if: success()
+#        if: success()
         uses: appleboy/scp-action@master
         with:
           host: 35.216.7.103
