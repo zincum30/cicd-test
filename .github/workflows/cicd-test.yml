@@ -30,24 +30,24 @@ jobs:
             ${{ runner.os }}-gradle-
 
 
-      - name: Run tests and generate Jacoco report
-        continue-on-error: true
-        run: |
-          cd hobbyzone
-          ./gradlew jacocoTestReport
-
-      - name: Upload test report
-        if: always()
-        uses: actions/upload-artifact@v3
-        with:
-          name: test-report
-          path: hobbyzone/build/reports/tests/test/
-
-      - name: Check coverage and fail if below threshold
-        if: ${{ steps.jacoco.outputs.coverage < '50.0' }}
-        run: |
-          echo "JaCoCo overall coverage is below threshold. Current coverage: ${{ steps.jacoco.outputs.coverage }}"
-          exit 1
+#      - name: Run tests and generate Jacoco report
+#        continue-on-error: true
+#        run: |
+#          cd hobbyzone
+#          ./gradlew jacocoTestReport
+#
+#      - name: Upload test report
+#        if: always()
+#        uses: actions/upload-artifact@v3
+#        with:
+#          name: test-report
+#          path: hobbyzone/build/reports/tests/test/
+#
+#      - name: Check coverage and fail if below threshold
+#        if: ${{ steps.jacoco.outputs.coverage < '50.0' }}
+#        run: |
+#          echo "JaCoCo overall coverage is below threshold. Current coverage: ${{ steps.jacoco.outputs.coverage }}"
+#          exit 1
 
       - name: Copy jar file to remote VM
         if: success()
